@@ -443,6 +443,26 @@ test("attachCaptions：标签号后接续接词是正文引用句，不吸附（
   assert.equal(pages[0].blocks[1].text, "表1所示为本项目的投资估算与资金来源情况说明");
 });
 
+test("attachCaptions：各式连字符/破折号分隔的图注都能吸附（#21）", () => {
+  // 旧字符类 [-−—－.．] 漏了 en dash(U+2013)/figure dash 等，导致这类图注不吸附、沦为普通段落
+  for (const sep of ["-", "\u2013", "\u2014", "\u2212", "\uFF0D", "\u2010", "\u2015"]) {
+    const text = `图1${sep}2 土方回填断面图`;
+    const json = {
+      pages: [
+        {
+          layouts: [L("image", 0, 0, 500, 300), L("text", 0, 310, 500, 30, { text })],
+          images: [],
+        },
+      ],
+    };
+    json.pages[0].layouts[0].layout_id = "i1";
+    json.pages[0].images.push({ layout_id: "i1", data_url: "http://x/1.jpg" });
+    const pages = layoutToPageBlocks(json, { mergeCrossPageTables: false });
+    assert.equal(pages[0].blocks.length, 1, `分隔符 ${JSON.stringify(sep)} 的图注应被吸附`);
+    assert.equal(pages[0].blocks[0].caption, text);
+  }
+});
+
 test("stripPageNumberBlocks：整页不足 3 块时不剥（#16：孤块数字可能是表单值/年份）", () => {
   const json = {
     pages: [
