@@ -6,7 +6,7 @@ import { spawnSync } from "node:child_process";
 import { mkdtempSync, writeFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { zipStore, crc32, blocksToDocx, blocksToDocumentXml, xmlEscape } from "../lib/ooxml.js";
+import { zipStore, crc32, blocksToDocx, blocksToDocxPages, blocksToDocumentXml, xmlEscape } from "../lib/ooxml.js";
 import { blocksToMarkdown } from "../lib/markdown.js";
 import { markdownToBlocks } from "../lib/markdown.js";
 
@@ -230,4 +230,74 @@ test("omml 行内公式长度帽（#math：相隔很远的两个 $ 不吞整行�
   // 帽内正常转换不受影响
   const ok = blocksToDocumentXml([{ type: "p", text: "式 $E=mc^2$ 完" }], { formulaMode: "omml" });
   assert.ok(ok.includes("<m:oMath>"));
+});
+
+// ── 产物确定性（复审 ②）────────────────────────────────────────────────────
+// docx 曾有两处时间戳走 new Date()：zip 每个条目的 mtime（dosDateTime）与
+// docProps/core.xml 的 dcterms:created/modified。同一输入两次导出字节不同，
+// golden 快照 / 产物 diff / 导出缓存全部失效。以下用例锁住"可复现"。
+test("docx 确定性：同输入间隔跨秒两次导出，字节完全一致", async () => {
+  const a = blocksToDocx(SAMPLE_BLOCKS, { title: "确定性" });
+  await new Promise((r) => setTimeout(r, 1100)); // 越过秒边界：旧实现此处 zip mtime/core.xml 必不同
+  const b = blocksToDocx(SAMPLE_BLOCKS, { title: "确定性" });
+  assert.ok(a.equals(b), "两次导出字节必须一致（zip mtime + core.xml 均已固定）");
+});
+
+test("docx 确定性：createdAt 透传到 core.xml，且不同时间戳确实产出不同字节", () => {
+  const t = Date.UTC(2026, 9, 15, 12, 0, 0);
+  const a = blocksToDocx([{ type: "p", text: "x" }], { createdAt: t });
+  const b = blocksToDocx([{ type: "p", text: "x" }], { createdAt: t });
+  assert.ok(a.equals(b), "同一 createdAt 必须字节一致");
+  assert.ok(a.toString("latin1").includes("2026-10-15T12:00:00Z"), "core.xml 使用透传时间戳");
+  const c = blocksToDocx([{ type: "p", text: "x" }], { createdAt: t + 60000 });
+  assert.ok(!a.equals(c), "时间戳不同 → 字节不同（证明该参数真生效，而非被忽略）");
+});
+
+test("docx 确定性：SOURCE_DATE_EPOCH 可复现构建惯例覆盖默认时间戳", () => {
+  const prev = process.env.SOURCE_DATE_EPOCH;
+  process.env.SOURCE_DATE_EPOCH = "1000000000"; // 2001-09-09T01:46:40Z
+  try {
+    const a = blocksToDocx([{ type: "p", text: "x" }]);
+    assert.ok(a.toString("latin1").includes("2001-09-09T01:46:40Z"), "env 覆盖未生效");
+  } finally {
+    if (prev === undefined) delete process.env.SOURCE_DATE_EPOCH;
+    else process.env.SOURCE_DATE_EPOCH = prev;
+  }
+});
+
+test("docx 确定性：多节路径 blocksToDocxPages 同样可复现", () => {
+  const pages = [
+    { blocks: [{ type: "p", text: "页一" }] },
+    { blocks: [{ type: "p", text: "页二" }] },
+  ];
+  const t = Date.UTC(2026, 0, 2, 3, 4, 5);
+  const a = blocksToDocxPages(pages, { createdAt: t });
+  const b = blocksToDocxPages(pages, { createdAt: t });
+  assert.ok(a.equals(b), "多节两次导出字节必须一致");
+  assert.ok(a.toString("latin1").includes("2026-01-02T03:04:05Z"), "多节 core.xml 用透传时间戳");
+});
+
+test("docx 确定性：DOS 时间值域外的 createdAt 被夹取，不得崩溃（1970 / 2200）", () => {
+  // DOS 时间字段只能表达 1980–2107；越界会让 writeUInt16LE 抛 ERR_OUT_OF_RANGE。
+  // 源文件 mtime 被 touch 成 1970 时必须仍能导出，而不是整个导出失败。
+  const a = blocksToDocx([{ type: "p", text: "x" }], { createdAt: 0 }); // 1970-01-01 → 夹到基准
+  assert.equal(a.readUInt32LE(0), 0x04034b50, "1970 时间戳应被夹取而非抛错");
+  const b = blocksToDocx([{ type: "p", text: "x" }], { createdAt: Date.UTC(2200, 0, 1) }); // → 夹到上界
+  assert.equal(b.readUInt32LE(0), 0x04034b50, "2200 时间戳应被夹取而非抛错");
+  // 同日再次调用仍可复现
+  assert.ok(a.equals(blocksToDocx([{ type: "p", text: "x" }], { createdAt: 0 })));
+});
+
+test("docx 确定性：zip 条目时间按 UTC 编码（跨时区导出字节一致）", () => {
+  // DOS 时间字段不带时区。若用本地分量编码，同一源文件在 GMT+8 与 UTC 的机器上
+  // 会导出不同字节，"同一输入 → 同一字节"就跨不了机器。此处直接钉住 UTC 编码值。
+  const t = Date.UTC(2026, 9, 15, 12, 34, 56); // 2026-10-15T12:34:56Z
+  const buf = zipStore([{ name: "a.txt", data: "x" }], { dtime: t });
+  assert.equal(buf.readUInt16LE(10), (12 << 11) | (34 << 5) | 28, "DOS 时间字段应为 UTC 12:34:56");
+  assert.equal(buf.readUInt16LE(12), ((2026 - 1980) << 9) | (10 << 5) | 15, "DOS 日期字段应为 UTC 2026-10-15");
+  // 同一时刻重复打包必须字节一致
+  assert.ok(buf.equals(zipStore([{ name: "a.txt", data: "x" }], { dtime: t })));
+  // core.xml 亦为 UTC（toISOString 本身即 UTC），与此保持同一时刻
+  const docx = blocksToDocx([{ type: "p", text: "x" }], { createdAt: t });
+  assert.ok(docx.toString("latin1").includes("2026-10-15T12:34:56Z"), "core.xml 与 zip 条目应是同一 UTC 时刻");
 });

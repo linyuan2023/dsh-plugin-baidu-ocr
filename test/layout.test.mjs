@@ -2,6 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { layoutToBlocks, layoutToPageBlocks, htmlToRows, mdTableToRows, mergeCrossPageTables, buildTableFromCells, HEADER_TYPES } from "../lib/layout.js";
+import { layoutToDocModel, docModelToContentList } from "../lib/docmodel.js";
 
 const L = (type, x, y, w, h, extra = {}) => ({ type, text: extra.text ?? "", position: [x, y, w, h], ...extra });
 
@@ -469,4 +470,50 @@ test("单元格字面 \\n 转真换行（AI Studio 后端在单元格文本里�
   assert.equal(h.rows[0][0], "责任领导：\n责任科室：\n责任人：");
   const rows = mdTableToRows("| 甲\\n乙 | 丙 |\n| --- | --- |\n| 1 | 2 |");
   assert.equal(rows[0][0], "甲\n乙");
+});
+
+// ── 方案 A（v0.4.1）：归一化基准由「内容极值」改为「页矩形」，杜绝有页边距文档被系统性拉伸 ──
+test("方案A：后端给页尺寸时 bbox 按页矩形归一化（不再用内容极值）", () => {
+  const json = {
+    pages: [
+      {
+        width: 1000,
+        height: 1400, // 页矩形（与 position 同单位）；内容仅占 x:100..700, y:100..560
+        layouts: [
+          L("text", 100, 100, 600, 40, { text: "正文" }),
+          L("footer", 100, 1300, 600, 40, { text: "页脚" }),
+        ],
+        images: [],
+      },
+    ],
+  };
+  const p = layoutToPageBlocks(json, { filterHeaderFooter: true })[0];
+  assert.equal(p._base, "page");
+  assert.equal(p._pageW, 1000);
+  assert.equal(p._pageH, 1400);
+  assert.equal(p.isLandscape, false); // 1000×1400 → 纵向（内容极值口径会误判横）
+  assert.equal(p.stats.filteredHF, 1); // 页脚被过滤
+  // 分母=页矩形：x0=100/1000*1000=100, y0=100/1400*1000≈71
+  // （若误用内容极值分母 pageW=700/pageH=1340，会得 [143,75,1000,104]）
+  assert.deepEqual(p.blocks[0].bbox, [100, 71, 700, 100]);
+});
+
+test("方案A 回退：无页尺寸时 _base=content，bbox 维持内容极值口径（旧行为不变）", () => {
+  const json = { pages: [{ layouts: [L("text", 100, 100, 600, 40, { text: "正文" })], images: [] }] };
+  const p = layoutToPageBlocks(json)[0];
+  assert.equal(p._base, "content");
+  assert.equal(p._pageW, 700);
+  assert.equal(p._pageH, 140);
+  assert.deepEqual(p.blocks[0].bbox, [143, 714, 1000, 1000]); // 100/700、100/140 归一化
+});
+
+test("方案A：DocumentModel 携带 base 与页尺寸；content-list 快照不外露 base", () => {
+  const json = { pages: [{ width: 1000, height: 1400, layouts: [L("text", 100, 100, 600, 40, { text: "x" })], images: [] }] };
+  const dm = layoutToDocModel(json);
+  assert.equal(dm.pages[0].base, "page");
+  assert.equal(dm.pages[0].width, 1000);
+  assert.equal(dm.pages[0].height, 1400);
+  const cl = docModelToContentList(dm);
+  assert.equal("base" in cl.pages[0], false); // 内部字段不得进入公开 content-list
+  assert.equal(cl.pages[0].width, 1000);
 });

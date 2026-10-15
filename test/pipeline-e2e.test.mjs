@@ -93,3 +93,39 @@ test("A 通道：百度 error_code 冒泡为中文 OcrError", async (t) => {
     (e) => e.baiduCode === 17 && e.message.includes("每日流量超限")
   );
 });
+
+test("B 通道：任务 done 但响应缺 markdown_url → 任务必须落 failed（不得停在 running）", async (t) => {
+  const dir = mkdtempSync(join(tmpdir(), "ocr-e2e3-"));
+  t.after(() => {
+    globalThis.fetch = realFetch;
+    rmSync(dir, { recursive: true, force: true });
+  });
+  process.env.DSH_OCR_TOKEN_FILE = join(dir, "token.json"); // 隔离 tasks.json/token.json
+
+  const { recordTask, findTask } = await import("../lib/tasks.js");
+  const { pollVlUntilDone } = await import("../lib/baidu.js");
+
+  const taskId = "task-shape-1";
+  recordTask({ id: taskId, provider: "baidu", fileName: "x.pdf" });
+  assert.equal(findTask(taskId).status, "running");
+
+  globalThis.fetch = async (url) => {
+    const u = String(url);
+    if (u.includes("/oauth/2.0/token")) {
+      return { status: 200, text: async () => JSON.stringify({ access_token: "t", expires_in: 100 }) };
+    }
+    // 任务已完成，但 result 里没有 markdown_url（字段形状异常）
+    return { status: 200, text: async () => JSON.stringify({ result: { status: "success" } }) };
+  };
+
+  const cfg = { apiKey: "ak", secretKey: "sk", requestTimeoutMs: 5000, vlPollTimeoutMs: 20000 };
+  await assert.rejects(
+    () => pollVlUntilDone(cfg, taskId),
+    (e) => e.code === "E_VL_RESULT_SHAPE"
+  );
+  assert.equal(
+    findTask(taskId)?.status,
+    "failed",
+    "形状异常是终态，必须落 failed；停在 running 会让每次 /ocr resume 无限重复轮询同一条结果"
+  );
+});
