@@ -55,6 +55,6 @@ DeepSeek Harness 插件：百度云端 OCR——图片/PDF/文档文字识别，
   vl 通道放宽到图片 <= 10MB / 8192px、PDF <= 100MB、Word/PPT <= 50MB
 - 识别配额/QPS 报错会给出中文说明，详见错误提示
 - npm 正式发布后可免压缩包安装：dependencies 直接写
-  "dsh-plugin-baidu-ocr": "^0.3.2"
+  "dsh-plugin-baidu-ocr": "^0.4.0"
 
 版本 0.4.0 · MIT License · 作者 linyuan2023

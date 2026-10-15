@@ -74,7 +74,7 @@ DeepSeek Harness 插件：百度云端 OCR + 本地直读——图片 / PDF / Of
 - ✅ 复刻保真：复刻 PDF / 复刻度评分 / docx 页几何钉死 / 字号还原 / content-list / 3+栏 / 表注 / 真嵌套表
 - ✅ 内容完整性：跨页段落合并 / Office 本地直读 / 薄页检测 / 页级混合（补识别默认关）
 - ✅ 多后端与文档库：故障自动切换（默认关）/ /ocr lib / tier 档位 / 流式落盘
-- ✅ **golden 回归集**（10 组版面样本快照）+ **171 用例全绿**（`npm test`）
+- ✅ **golden 回归集**（10 组版面样本快照）+ **168 用例全绿**（`npm test`）
 - 版本历史：0.1.0 首版 → 0.2.x 表格与公式专项 → 0.3.x 大文档能力（分段/缓存/任务找回/矢量重截）→ **0.4.0 复刻与完整性大版本**（详见 `docs/mineru-upgrade-plan.md` 与 `docs/v0.4.0-upgrade-plan.md`）
 
 **已知降级**：`ctx.settings.register` 在 DSH 0.2.0-rc.2 不可用（notify 同样），配置走 `~/.dsh/ocr/config.json`，面板读写 `/ocr/api/settings` 不受影响。
@@ -104,7 +104,7 @@ cd ~/.dsh/profiles/web && pnpm install
 
 ```bash
 cd <插件目录>
-npm test        # node --test，171 用例：golden 回归 + 单测 + 集成（pymupdf 缺失自动跳过）
+npm test        # node --test，168 用例：golden 回归 + 单测 + 集成（pymupdf 缺失自动跳过）
 UPDATE_GOLDEN=1 node --test test/golden.test.mjs   # 刷新 golden 快照（先人工确认变更）
 node docs/samples/run-ocr.mjs <图片> <engine> <format> [outDir]   # 脱离 DSH 直跑管线
 node docs/samples/capture-layout.mjs <PDF> <out.json> [AK] [SK]   # 采集真实版面 JSON（耗配额，一次性）
