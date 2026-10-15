@@ -1,0 +1,33 @@
+{
+ "pages": [
+  {
+   "layouts": [
+    {
+     "layout_id": 1,
+     "type": "text",
+     "text": "管道材料表如下。",
+     "position": [
+      100,
+      60,
+      600,
+      30
+     ]
+    },
+    {
+     "layout_id": 21,
+     "type": "table",
+     "text": "",
+     "position": [
+      100,
+      120,
+      600,
+      500
+     ],
+     "table_html": "<table><tr><td>品名</td><td>数量</td></tr><tr><td>闸阀</td><td>6</td></tr></table>"
+    }
+   ],
+   "images": [],
+   "tables": []
+  }
+ ]
+}

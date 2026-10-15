@@ -1,0 +1,60 @@
+dsh-plugin-baidu-ocr 安装说明（压缩包方式）
+========================================
+
+DeepSeek Harness 插件：百度云端 OCR——图片/PDF/文档文字识别，
+可保存为 txt / markdown / Word / GB-T 9704 公文 Word / csv。
+
+一、前提
+--------
+1. 已安装 DeepSeek Harness（DSH），Node >= 22.5
+2. 自备百度智能云密钥（免费额度按账号计，需自行注册）：
+   控制台 https://console.bce.baidu.com → 文字识别 OCR → 创建应用 → 拿到 API Key(AK) 与 Secret Key(SK)
+
+二、安装步骤
+------------
+1. 把 dsh-plugin-baidu-ocr 整个文件夹解压到一个长期存放的位置（例如 D:\plugins\）
+
+2. 编辑 %USERPROFILE%\.dsh\profiles\web\package.json，改两处：
+   a) dependencies 里加一行（路径换成你的实际解压路径，用正斜杠）：
+        "dsh-plugin-baidu-ocr": "file:<你的解压路径>/dsh-plugin-baidu-ocr"
+   b) "dsh": { "profile": { "bundles": [ ... ] } } 数组里加一行：
+        "dsh-plugin-baidu-ocr"
+
+3. 执行安装：
+        cd %USERPROFILE%\.dsh\profiles\web
+        pnpm install
+
+4. 重启 DSH（dsh-web-debug.cmd --force），
+   日志 %USERPROFILE%\.dsh\logs\dsh-daemon.log 出现
+   [ocr] dsh-plugin-baidu-ocr 已加载  即成功
+
+5. 打开 DSH 设置 → OCR：
+   填入 AK / SK → 点"测试连接" → 显示 token 信息即通
+
+三、使用
+--------
+- 斜杠命令：
+    /ocr D:\截图.png --md          识别并保存 markdown
+    /ocr D:\文档.pdf --vl --docx   结构化识别后保存 Word
+    /ocr D:\红头.png --vl --gongwen 保存为 GB/T 9704 公文 Word
+    /ocr D:\某目录 --dir --txt     批量识别整个目录
+- 对话：直接说"把这张截图的文字提出来存成 md"，模型会自动调用工具
+- 设置面板可改默认引擎/格式/保存目录
+
+四、可选：公文导出
+------------------
+--gongwen 需要 Python >= 3.10 并安装：
+    pip install gongwen-skill
+未安装时不会报错：自动降级为普通 docx 并在返回中注明。
+
+五、常见问题
+------------
+- 若 pnpm install 后日志报 schemastery 找不到：
+  在插件解压目录里再执行一次 pnpm install 即可
+- 图片限制：同步通道编码后 <= 4MB、最长边 <= 4096px；
+  vl 通道放宽到图片 <= 10MB / 8192px、PDF <= 100MB、Word/PPT <= 50MB
+- 识别配额/QPS 报错会给出中文说明，详见错误提示
+- npm 正式发布后可免压缩包安装：dependencies 直接写
+  "dsh-plugin-baidu-ocr": "^0.3.2"
+
+版本 0.4.0 · MIT License · 作者 linyuan2023

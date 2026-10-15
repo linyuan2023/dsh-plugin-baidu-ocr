@@ -1,0 +1,22 @@
+{
+ "pages": [
+  {
+   "layouts": [
+    {
+     "layout_id": 31,
+     "type": "table",
+     "text": "",
+     "position": [
+      100,
+      60,
+      600,
+      400
+     ],
+     "table_html": "<table><tr><td>品名</td><td>数量</td></tr><tr><td>蝶阀</td><td>4</td></tr></table>"
+    }
+   ],
+   "images": [],
+   "tables": []
+  }
+ ]
+}

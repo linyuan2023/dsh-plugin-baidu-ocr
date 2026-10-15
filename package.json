@@ -1,0 +1,61 @@
+{
+  "name": "dsh-plugin-baidu-ocr",
+  "version": "0.4.0",
+  "description": "DeepSeek Harness 插件：百度云端 OCR——图片/PDF/文档文字识别（通用/高精度/手写）与 PaddleOCR-VL 文档解析，结果可保存为 txt/md/docx/GB-T 公文 docx。零第三方依赖。",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": {
+      "default": "./lib/index.js"
+    },
+    "./client": {
+      "default": "./lib/client.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek",
+    "harness",
+    "ocr",
+    "paddleocr",
+    "baidu",
+    "text-recognition"
+  ],
+  "license": "MIT",
+  "author": "linyuan2023",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/linyuan2023/dsh-plugin-baidu-ocr.git"
+  },
+  "engines": {
+    "node": ">=22.5"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-client-locale"
+      ],
+      "platform": "web"
+    }
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@deepseek-ai/schemastery": "~3.18.4"
+  }
+}

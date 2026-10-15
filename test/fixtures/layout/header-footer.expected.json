@@ -1,0 +1,43 @@
+{
+ "blocks": [
+  {
+   "type": "h1",
+   "text": "章节标题",
+   "bbox": [
+    143,
+    143,
+    1000,
+    223
+   ],
+   "_fontUnits": 20
+  },
+  {
+   "type": "p",
+   "text": "正文内容第一段。",
+   "bbox": [
+    143,
+    268,
+    1000,
+    321
+   ],
+   "_fontUnits": 30
+  },
+  {
+   "type": "p",
+   "text": "正文内容第二段。",
+   "bbox": [
+    143,
+    357,
+    1000,
+    411
+   ],
+   "_fontUnits": 30
+  }
+ ],
+ "stats": {
+  "filteredHF": 2,
+  "imageCount": 0,
+  "strippedPN": 2,
+  "unknownTypes": []
+ }
+}

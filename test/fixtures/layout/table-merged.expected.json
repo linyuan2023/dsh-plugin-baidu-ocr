@@ -1,0 +1,84 @@
+{
+ "blocks": [
+  {
+   "type": "h1",
+   "text": "主要材料表",
+   "bbox": [
+    143,
+    103,
+    1000,
+    231
+   ],
+   "_fontUnits": 30
+  },
+  {
+   "type": "table",
+   "rows": [
+    [
+     "管材",
+     "",
+     "数量"
+    ],
+    [
+     "PPR",
+     "DN50",
+     "20"
+    ],
+    [
+     "",
+     "DN80 计 12 根",
+     ""
+    ]
+   ],
+   "merges": [
+    {
+     "r": 0,
+     "c": 0,
+     "rowSpan": 1,
+     "colSpan": 2
+    },
+    {
+     "r": 1,
+     "c": 0,
+     "rowSpan": 2,
+     "colSpan": 1
+    },
+    {
+     "r": 2,
+     "c": 1,
+     "rowSpan": 1,
+     "colSpan": 2
+    }
+   ],
+   "_pos": [
+    100,
+    120,
+    600,
+    200
+   ],
+   "bbox": [
+    143,
+    308,
+    1000,
+    821
+   ]
+  },
+  {
+   "type": "p",
+   "text": "以上材料按图纸统计。",
+   "bbox": [
+    143,
+    923,
+    1000,
+    1000
+   ],
+   "_fontUnits": 30
+  }
+ ],
+ "stats": {
+  "filteredHF": 0,
+  "imageCount": 0,
+  "strippedPN": 0,
+  "unknownTypes": []
+ }
+}

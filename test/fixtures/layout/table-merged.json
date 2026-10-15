@@ -1,0 +1,44 @@
+{
+ "pages": [
+  {
+   "layouts": [
+    {
+     "layout_id": 1,
+     "type": "doc_title",
+     "text": "主要材料表",
+     "position": [
+      100,
+      40,
+      600,
+      50
+     ]
+    },
+    {
+     "layout_id": 21,
+     "type": "table",
+     "text": "",
+     "position": [
+      100,
+      120,
+      600,
+      200
+     ],
+     "table_html": "<table><tr><th colspan=\"2\">管材</th><th>数量</th></tr><tr><td rowspan=\"2\">PPR</td><td>DN50</td><td>20</td></tr><tr><td colspan=\"2\">DN80 计 12 根</td></tr></table>"
+    },
+    {
+     "layout_id": 2,
+     "type": "text",
+     "text": "以上材料按图纸统计。",
+     "position": [
+      100,
+      360,
+      600,
+      30
+     ]
+    }
+   ],
+   "images": [],
+   "tables": []
+  }
+ ]
+}

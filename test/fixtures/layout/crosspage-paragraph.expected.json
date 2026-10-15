@@ -1,0 +1,43 @@
+{
+ "blocks": [
+  {
+   "type": "p",
+   "text": "第一章 总则",
+   "bbox": [
+    143,
+    333,
+    1000,
+    600
+   ],
+   "_fontUnits": 40
+  },
+  {
+   "type": "p",
+   "text": "本工程采用明挖法施工基坑深度约五米。",
+   "bbox": [
+    143,
+    800,
+    1000,
+    1000
+   ],
+   "_fontUnits": 30
+  },
+  {
+   "type": "p",
+   "text": "局部采用钢板桩支护。",
+   "bbox": [
+    143,
+    800,
+    1000,
+    1000
+   ],
+   "_fontUnits": 30
+  }
+ ],
+ "stats": {
+  "filteredHF": 0,
+  "imageCount": 0,
+  "strippedPN": 0,
+  "unknownTypes": []
+ }
+}

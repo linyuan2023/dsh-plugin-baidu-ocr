@@ -1,0 +1,14 @@
+# 本地凭据与缓存（绝不入库）
+token.json
+config.json
+*.local
+
+# 日志
+logs/
+
+# node 垃圾
+node_modules/
+*.log
+
+# 工作区元数据
+.workbuddy/

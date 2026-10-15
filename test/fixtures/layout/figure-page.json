@@ -1,0 +1,59 @@
+{
+ "pages": [
+  {
+   "layouts": [
+    {
+     "layout_id": 1,
+     "type": "doc_title",
+     "text": "泵站施工图说明",
+     "position": [
+      100,
+      40,
+      600,
+      50
+     ]
+    },
+    {
+     "layout_id": 2,
+     "type": "text",
+     "text": "本图尺寸除标高以米计外，其余均以毫米计。",
+     "position": [
+      100,
+      120,
+      600,
+      30
+     ]
+    },
+    {
+     "layout_id": 11,
+     "type": "image",
+     "text": "",
+     "position": [
+      100,
+      180,
+      300,
+      200
+     ]
+    },
+    {
+     "layout_id": 3,
+     "type": "text",
+     "text": "图3-1-1 泵站平面布置图",
+     "position": [
+      100,
+      400,
+      300,
+      25
+     ]
+    }
+   ],
+   "images": [
+    {
+     "layout_id": 11,
+     "data_url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="
+    }
+   ],
+   "tables": []
+  }
+ ]
+}

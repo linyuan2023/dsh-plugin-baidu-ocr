@@ -1,0 +1,4 @@
+# dsh-plugin-baidu-ocr bundle patch：挂载插件自身
+- insert:
+    - id: ocr
+      name: 'dsh-plugin-baidu-ocr'

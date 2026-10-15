@@ -1,0 +1,120 @@
+{
+ "pages": [
+  {
+   "layouts": [
+    {
+     "layout_id": 1,
+     "type": "doc_title",
+     "text": "三栏报纸版式",
+     "position": [
+      40,
+      30,
+      720,
+      45
+     ]
+    },
+    {
+     "layout_id": 10,
+     "type": "text",
+     "text": "第10栏第1条内容。",
+     "position": [
+      40,
+      120,
+      200,
+      35
+     ]
+    },
+    {
+     "layout_id": 11,
+     "type": "text",
+     "text": "第10栏第2条内容。",
+     "position": [
+      40,
+      175,
+      200,
+      35
+     ]
+    },
+    {
+     "layout_id": 12,
+     "type": "text",
+     "text": "第10栏第3条内容。",
+     "position": [
+      40,
+      230,
+      200,
+      35
+     ]
+    },
+    {
+     "layout_id": 30,
+     "type": "text",
+     "text": "第30栏第1条内容。",
+     "position": [
+      300,
+      120,
+      200,
+      35
+     ]
+    },
+    {
+     "layout_id": 31,
+     "type": "text",
+     "text": "第30栏第2条内容。",
+     "position": [
+      300,
+      175,
+      200,
+      35
+     ]
+    },
+    {
+     "layout_id": 32,
+     "type": "text",
+     "text": "第30栏第3条内容。",
+     "position": [
+      300,
+      230,
+      200,
+      35
+     ]
+    },
+    {
+     "layout_id": 50,
+     "type": "text",
+     "text": "第50栏第1条内容。",
+     "position": [
+      560,
+      120,
+      200,
+      35
+     ]
+    },
+    {
+     "layout_id": 51,
+     "type": "text",
+     "text": "第50栏第2条内容。",
+     "position": [
+      560,
+      175,
+      200,
+      35
+     ]
+    },
+    {
+     "layout_id": 52,
+     "type": "text",
+     "text": "第50栏第3条内容。",
+     "position": [
+      560,
+      230,
+      200,
+      35
+     ]
+    }
+   ],
+   "images": [],
+   "tables": []
+  }
+ ]
+}

@@ -1,0 +1,60 @@
+{
+ "pages": [
+  {
+   "layouts": [
+    {
+     "layout_id": 1,
+     "type": "text",
+     "text": "第一章 总则",
+     "position": [
+      100,
+      50,
+      600,
+      40
+     ]
+    },
+    {
+     "layout_id": 2,
+     "type": "text",
+     "text": "本工程采用明挖法施工",
+     "position": [
+      100,
+      120,
+      600,
+      30
+     ]
+    }
+   ],
+   "images": [],
+   "tables": []
+  },
+  {
+   "layouts": [
+    {
+     "layout_id": 11,
+     "type": "text",
+     "text": "基坑深度约五米。",
+     "position": [
+      100,
+      60,
+      600,
+      30
+     ]
+    },
+    {
+     "layout_id": 12,
+     "type": "text",
+     "text": "局部采用钢板桩支护。",
+     "position": [
+      100,
+      120,
+      600,
+      30
+     ]
+    }
+   ],
+   "images": [],
+   "tables": []
+  }
+ ]
+}

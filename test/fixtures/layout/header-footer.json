@@ -1,0 +1,87 @@
+{
+ "pages": [
+  {
+   "layouts": [
+    {
+     "layout_id": 1,
+     "type": "header",
+     "text": "XX设计院",
+     "position": [
+      100,
+      10,
+      600,
+      20
+     ]
+    },
+    {
+     "layout_id": 2,
+     "type": "text",
+     "text": "12",
+     "position": [
+      100,
+      40,
+      40,
+      20
+     ]
+    },
+    {
+     "layout_id": 3,
+     "type": "doc_title",
+     "text": "章节标题",
+     "position": [
+      100,
+      80,
+      600,
+      45
+     ]
+    },
+    {
+     "layout_id": 4,
+     "type": "text",
+     "text": "正文内容第一段。",
+     "position": [
+      100,
+      150,
+      600,
+      30
+     ]
+    },
+    {
+     "layout_id": 5,
+     "type": "text",
+     "text": "正文内容第二段。",
+     "position": [
+      100,
+      200,
+      600,
+      30
+     ]
+    },
+    {
+     "layout_id": 6,
+     "type": "text",
+     "text": "13",
+     "position": [
+      100,
+      500,
+      40,
+      20
+     ]
+    },
+    {
+     "layout_id": 7,
+     "type": "footer",
+     "text": "第 12 页",
+     "position": [
+      100,
+      540,
+      600,
+      20
+     ]
+    }
+   ],
+   "images": [],
+   "tables": []
+  }
+ ]
+}

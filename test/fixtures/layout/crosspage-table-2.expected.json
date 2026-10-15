@@ -1,0 +1,35 @@
+{
+ "blocks": [
+  {
+   "type": "table",
+   "rows": [
+    [
+     "品名",
+     "数量"
+    ],
+    [
+     "蝶阀",
+     "4"
+    ]
+   ],
+   "_pos": [
+    100,
+    60,
+    600,
+    400
+   ],
+   "bbox": [
+    143,
+    130,
+    1000,
+    1000
+   ]
+  }
+ ],
+ "stats": {
+  "filteredHF": 0,
+  "imageCount": 0,
+  "strippedPN": 0,
+  "unknownTypes": []
+ }
+}

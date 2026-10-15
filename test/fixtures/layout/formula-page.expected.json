@@ -1,0 +1,43 @@
+{
+ "blocks": [
+  {
+   "type": "h1",
+   "text": "公式示例",
+   "bbox": [
+    143,
+    190,
+    1000,
+    429
+   ],
+   "_fontUnits": 30
+  },
+  {
+   "type": "p",
+   "text": "质能方程 E=mc² 为著名公式。",
+   "bbox": [
+    143,
+    571,
+    1000,
+    714
+   ],
+   "_fontUnits": 30
+  },
+  {
+   "type": "p",
+   "text": "欧拉公式 e^(iπ)+1=0 被誉为最优美的公式。",
+   "bbox": [
+    143,
+    857,
+    1000,
+    1000
+   ],
+   "_fontUnits": 30
+  }
+ ],
+ "stats": {
+  "filteredHF": 0,
+  "imageCount": 0,
+  "strippedPN": 0,
+  "unknownTypes": []
+ }
+}

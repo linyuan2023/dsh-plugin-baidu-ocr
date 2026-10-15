@@ -1,0 +1,87 @@
+{
+ "pages": [
+  {
+   "layouts": [
+    {
+     "layout_id": 1,
+     "type": "doc_title",
+     "text": "双栏论文标题",
+     "position": [
+      50,
+      30,
+      700,
+      45
+     ]
+    },
+    {
+     "layout_id": 10,
+     "type": "text",
+     "text": "左栏第一段内容较长。",
+     "position": [
+      50,
+      120,
+      300,
+      40
+     ]
+    },
+    {
+     "layout_id": 11,
+     "type": "text",
+     "text": "左栏第二段内容。",
+     "position": [
+      50,
+      180,
+      300,
+      40
+     ]
+    },
+    {
+     "layout_id": 12,
+     "type": "text",
+     "text": "左栏第三段内容。",
+     "position": [
+      50,
+      240,
+      300,
+      40
+     ]
+    },
+    {
+     "layout_id": 20,
+     "type": "text",
+     "text": "右栏第一段内容较长。",
+     "position": [
+      420,
+      120,
+      300,
+      40
+     ]
+    },
+    {
+     "layout_id": 21,
+     "type": "text",
+     "text": "右栏第二段内容。",
+     "position": [
+      420,
+      180,
+      300,
+      40
+     ]
+    },
+    {
+     "layout_id": 22,
+     "type": "text",
+     "text": "右栏第三段内容。",
+     "position": [
+      420,
+      240,
+      300,
+      40
+     ]
+    }
+   ],
+   "images": [],
+   "tables": []
+  }
+ ]
+}

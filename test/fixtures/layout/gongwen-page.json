@@ -1,0 +1,76 @@
+{
+ "pages": [
+  {
+   "layouts": [
+    {
+     "layout_id": 1,
+     "type": "doc_title",
+     "text": "关于印发管理办法的通知",
+     "position": [
+      120,
+      60,
+      560,
+      45
+     ]
+    },
+    {
+     "layout_id": 2,
+     "type": "text",
+     "text": "各处室、各直属单位：",
+     "position": [
+      100,
+      140,
+      600,
+      25
+     ]
+    },
+    {
+     "layout_id": 3,
+     "type": "paragraph_title",
+     "text": "一、总体要求",
+     "position": [
+      100,
+      190,
+      600,
+      28
+     ]
+    },
+    {
+     "layout_id": 4,
+     "type": "text",
+     "text": "以高质量发展为主线，扎实做好各项工作。",
+     "position": [
+      100,
+      240,
+      600,
+      25
+     ]
+    },
+    {
+     "layout_id": 5,
+     "type": "paragraph_title",
+     "text": "（一）加强组织领导",
+     "position": [
+      100,
+      290,
+      600,
+      26
+     ]
+    },
+    {
+     "layout_id": 6,
+     "type": "text",
+     "text": "成立工作专班，明确责任分工。",
+     "position": [
+      100,
+      340,
+      600,
+      25
+     ]
+    }
+   ],
+   "images": [],
+   "tables": []
+  }
+ ]
+}
