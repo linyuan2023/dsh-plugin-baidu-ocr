@@ -301,3 +301,17 @@ test("docx 确定性：zip 条目时间按 UTC 编码（跨时区导出字节一
   const docx = blocksToDocx([{ type: "p", text: "x" }], { createdAt: t });
   assert.ok(docx.toString("latin1").includes("2026-10-15T12:34:56Z"), "core.xml 与 zip 条目应是同一 UTC 时刻");
 });
+
+test("段落文本 \n 转 <w:br/>（后端整页目录识别为一块时行结构不丢）", () => {
+  // OOXML 的 <w:t> 内 \n 在 Word 里不换行；须显式 <w:br/>（同表格路径口径）
+  const xml = blocksToDocumentXml([{ type: "p", text: "初版序言 ..... 1\n再版序言 ..... 2" }]);
+  assert.ok(xml.includes("初版序言 ..... 1</w:t></w:r><w:r><w:br/></w:r>"), "换行处应为 <w:br/>");
+  assert.ok(!/<w:t[^>]*>[^<]*\n/.test(xml), "<w:t> 内不得残留裸 \n");
+  // 标题同口径
+  const h = blocksToDocumentXml([{ type: "h2", text: "第三章 国家与革命\n馬克思的分析" }]);
+  assert.ok(h.includes("<w:br/>"));
+  // CRLF 亦按换行处理
+  const crlf = blocksToDocumentXml([{ type: "p", text: "甲\r\n乙" }]);
+  assert.ok(crlf.includes("<w:br/>"));
+  assert.ok(!crlf.includes("甲\r"));
+});

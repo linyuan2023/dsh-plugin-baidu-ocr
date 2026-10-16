@@ -122,3 +122,25 @@ test("stripPageNumberLines：≥10 行孤立数字整体剥离（markdown 路径
   // 带文字的编号行不是孤立数字
   assert.equal(stripPageNumberLines("3. 工艺流程\n4. 验收标准\n5. 成品保护\n6. 效果图\n7. 附图\n8. 附表\n9. 记录\n10. 样表\n11. 清单\n12. 说明").removed, 0);
 });
+
+test("行尾双空格硬换行：同段保形为 \n，软换行仍按 CJK/西文规则合并", () => {
+  // 目录页实测形态：每条一行、行尾两个空格——行结构必须保住，不能并成流水段
+  const toc = markdownToBlocks("初版序言 ..... 1  \n再版序言 ..... 2  \n第一章 阶级社会和国家 ..... 3");
+  assert.equal(toc.length, 1);
+  assert.equal(toc[0].type, "p");
+  assert.equal(toc[0].text, "初版序言 ..... 1\n再版序言 ..... 2\n第一章 阶级社会和国家 ..... 3");
+  // 混排：硬换行处保形，软换行处仍合并（CJK 无空格）
+  const mixed = markdownToBlocks("第一行  \n第二行\n第三行");
+  assert.equal(mixed[0].text, "第一行\n第二行第三行");
+  // 行尾单个空格不是硬换行
+  const soft = markdownToBlocks("甲 \n乙");
+  assert.equal(soft[0].text, "甲乙");
+});
+
+test("blocksToMarkdown：段内 \n 回写为行尾双空格硬换行，往返保形", () => {
+  const blocks = [{ type: "p", text: "初版序言 ..... 1\n再版序言 ..... 2" }];
+  const md = blocksToMarkdown(blocks);
+  assert.equal(md, "初版序言 ..... 1  \n再版序言 ..... 2");
+  const reparsed = markdownToBlocks(md);
+  assert.equal(reparsed[0].text, blocks[0].text);
+});

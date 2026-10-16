@@ -26,3 +26,11 @@ test("pagesToPdfFile：空页清单抛错而非产出 0 页 PDF（#15）", () =>
     (e) => e instanceof OcrError && e.code === "E_PDF_EMPTY"
   );
 });
+
+test("blocksToHtml：段落 \n 转 <br/>（HTML 会折叠裸换行，目录块行结构须显式标记）", () => {
+  const html = blocksToHtml([{ type: "p", text: "初版序言 ..... 1\n再版序言 ..... 2" }]);
+  assert.ok(html.includes("初版序言 ..... 1<br/>再版序言 ..... 2"));
+  // 标题同口径；转义仍生效（& 不受 <br/> 注入影响）
+  const h = blocksToHtml([{ type: "h2", text: "甲\n乙 & 丙" }]);
+  assert.ok(h.includes("甲<br/>乙 &amp; 丙"));
+});
