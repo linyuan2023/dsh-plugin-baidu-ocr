@@ -145,6 +145,32 @@ test("span_boxes 防御性解析：元素带 height 时参与标题分级", () =
   assert.equal(blocks[1].type, "h1");
 });
 
+test("字号密度法（v0.4.1）：隐形合并行的 text 块按字符密度折算 em，不再把块高当字号", () => {
+  // 实测样例（guojia 142字块）：W=649 H=224 N≈142（全角），真实 6 行、em≈27.4px。
+  // 旧算法把它当"多行正文"回退正文行高（72px），折算 pt 后放大 2.6 倍撞 clamp。
+  const chars142 = "頸裼决不是“迷恋”，决不是夸张，也决不是論战伎俩。必須不断教育群众，使他們这样來認識暴力革命，而且只能这样來認識暴力革命，这正是馬克思和恩格斯全部學說的基础。現在占統治地位的社會沙文主义和考茨基主义流派對馬克思和恩格斯學說的背叛，最突出地表現在这兩个流派都把这方面的宜传和鼓勵忘訊了。";
+  const json = {
+    pages: [
+      {
+        width: 783,
+        height: 1175,
+        layouts: [
+          L("text", 72, 149, 649, 224, { text: chars142 }),
+          L("text", 146, 788, 510, 36, { text: "从这一事实中可以得出两个结论：" }), // 单行：字号=块高
+          L("text", 0, 900, 600, 80, { text: "显式两行：\n块高80" }), // 显式 \n：80/2=40
+        ],
+        images: [],
+      },
+    ],
+  };
+  const pages = layoutToPageBlocks(json, { mergeMode: "off" });
+  const [merged, single, explicit] = pages[0].blocks;
+  // em = sqrt(649×224/(1.3×142)) ≈ 28.1，与实测 27.4 相差 <3%
+  assert.ok(Math.abs(merged._fontUnits - 28.1) < 1.5, `密度法 em=${merged._fontUnits}，期望 ≈28.1`);
+  assert.equal(single._fontUnits, 36, "单行块字号=块高");
+  assert.equal(explicit._fontUnits, 40, "显式两行字号=块高/行数");
+});
+
 test("未知类型：有文本 → 段落；纯装饰 → 跳过并记录", () => {
   const json = {
     pages: [
@@ -157,6 +183,113 @@ test("未知类型：有文本 → 段落；纯装饰 → 跳过并记录", () =
   const { blocks, stats } = layoutToBlocks(json);
   assert.deepEqual(blocks.map((b) => b.text), ["印章文字"]);
   assert.deepEqual(stats.unknownTypes, ["watermark"]);
+});
+
+// ── v0.4.1 标题分级 markdown 信号源（P2：扫描书"全 h3"根因修复）──
+import { applyMarkdownHeadingLevels } from "../lib/layout.js";
+
+test("markdown 标题分级：guojia 场景（##/### 且块高≈正文）→ h2/h2/h3，不再全落 h3", () => {
+  // 实测：guojia 三个 paragraph_title 块高≈正文行高（比值<1.1），旧规则全落 h3；
+  // markdown 给出 ## 第 二 章 / ## 国家与革命… / ### 1. 革命的前夜
+  const json = {
+    pages: [
+      {
+        layouts: [
+          L("text", 0, 100, 800, 40, { text: "正文块，块高40=行高" }),
+          L("paragraph_title", 0, 200, 800, 42, { text: "第 二 章" }),
+          L("paragraph_title", 0, 300, 800, 42, { text: "国家与革命 1848—1851 年的經驗" }),
+          L("paragraph_title", 0, 400, 800, 42, { text: "1. 革命的前夜" }),
+          L("text", 0, 500, 800, 40, { text: "正文" }),
+        ],
+        images: [],
+      },
+    ],
+  };
+  applyMarkdownHeadingLevels(json, ["## 第 二 章\n\n## 国家与革命 1848—1851 年的經驗\n\n### 1. 革命的前夜\n\n正文……"]);
+  const blocks = layoutToPageBlocks(json, { mergeMode: "off" })[0].blocks;
+  assert.deepEqual(
+    blocks.map((b) => b.type),
+    ["p", "h2", "h2", "h3", "p"]
+  );
+});
+
+test("markdown 标题分级：xuanyan 基线复现（顶级比值≥1.4 → h1，否则 h2）", () => {
+  const json = {
+    pages: [
+      {
+        layouts: [
+          L("text", 0, 100, 800, 40, { text: "正文" }),
+          L("paragraph_title", 0, 200, 800, 64, { text: "共产党宣言" }), // 64/40=1.6 → h1
+          L("paragraph_title", 0, 300, 800, 46, { text: "资产者和无产者" }), // 46/40=1.15 → h2
+          L("text", 0, 400, 800, 40, { text: "正文" }),
+        ],
+        images: [],
+      },
+    ],
+  };
+  applyMarkdownHeadingLevels(json, ["## 共产党宣言\n\n## 资产者和无产者"]);
+  const blocks = layoutToPageBlocks(json, { mergeMode: "off" })[0].blocks;
+  assert.deepEqual(blocks.map((b) => b.type), ["p", "h1", "h2", "p"]);
+});
+
+test("markdown 标题分级：text 块命中标题行时晋升（VL 漏标 title 场景）；去空白匹配；围栏内 # 不算标题", () => {
+  const json = {
+    pages: [
+      {
+        layouts: [
+          L("text", 0, 100, 800, 40, { text: "正文" }),
+          L("text", 0, 200, 800, 50, { text: "总 论" }), // markdown "## 总论" 去空白后命中 → 晋升
+          L("text", 0, 300, 800, 40, { text: "## 不是标题（围栏内）" }),
+          L("paragraph_title", 0, 400, 800, 42, { text: "真标题" }),
+        ],
+        images: [],
+      },
+    ],
+  };
+  applyMarkdownHeadingLevels(json, ["```\n## 不是标题（围栏内）\n```\n\n## 总论\n\n### 真标题"]);
+  const blocks = layoutToPageBlocks(json, { mergeMode: "off" })[0].blocks;
+  assert.deepEqual(
+    blocks.map((b) => `${b.type}:${b.text}`),
+    ["p:正文", "h2:总 论", "p:## 不是标题（围栏内）", "h3:真标题"]
+  );
+});
+
+test("markdown 标题分级：无 markdown/未命中时行为与旧规则完全一致", () => {
+  const json = {
+    pages: [
+      {
+        layouts: [
+          L("text", 0, 100, 800, 40, { text: "正文" }),
+          L("paragraph_title", 0, 200, 800, 42, { text: "小标题（1.05 → h3）" }),
+          L("paragraph_title", 0, 300, 800, 64, { text: "大标题（1.6 → h1）" }),
+        ],
+        images: [],
+      },
+    ],
+  };
+  // markdown 里没有对应标题行 → 无标注 → 旧比值规则
+  applyMarkdownHeadingLevels(json, ["## 别的文档的标题"]);
+  const blocks = layoutToPageBlocks(json, { mergeMode: "off" })[0].blocks;
+  assert.deepEqual(blocks.map((b) => b.type), ["p", "h3", "h1"]);
+});
+
+test("markdown 标题分级：含 # 封面的完整文档（big40p 场景）→ 章级 h2、节级 h3", () => {
+  const json = {
+    pages: [
+      {
+        layouts: [
+          L("doc_title", 0, 100, 800, 70, { text: "国家与革命" }),
+          L("paragraph_title", 0, 200, 800, 46, { text: "第 二 章" }), // ## → h2（不再被 tier 规则压成 h3）
+          L("paragraph_title", 0, 300, 800, 42, { text: "1. 革命的前夜" }), // ### → h3
+          L("text", 0, 400, 800, 40, { text: "正文" }),
+        ],
+        images: [],
+      },
+    ],
+  };
+  applyMarkdownHeadingLevels(json, ["# 国家与革命\n\n## 第 二 章\n\n### 1. 革命的前夜"]);
+  const blocks = layoutToPageBlocks(json, { mergeMode: "off" })[0].blocks;
+  assert.deepEqual(blocks.map((b) => b.type), ["h1", "h2", "h3", "p"]);
 });
 
 test("htmlToRows：colspan 网格占位 + merges", () => {
